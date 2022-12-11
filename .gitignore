@@ -1,3 +1,4 @@
 procman
 *.o
 build
+.cache

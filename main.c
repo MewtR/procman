@@ -2,6 +2,8 @@
 #include <sys/types.h> // for pid_t, see man pid_t
 #include <stdlib.h> // for strtoul, see man strtoul
 
+#include "pids.h"
+
 #define LEN 16
 
 int main(int argc, char * argv[]) 
