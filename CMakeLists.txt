@@ -11,6 +11,12 @@ set (LIBPROC_BIN ${LIBPROC_DIR}/bin)
 set (LIBPROC_SO ${LIBPROC_DIR}/bin/library/.libs/libproc2.so)
 set (LIBPROC_INC ${LIBPROC_SRC}/library/include)
 
+if(EXISTS ${LIBPROC_SRC}/configure)
+    set(CONFIG_CMD ${LIBPROC_SRC}/configure -C)
+else()
+    set(CONFIG_CMD ${LIBPROC_SRC}/autogen.sh && ${LIBPROC_SRC}/configure -C)
+endif()
+
 include(ExternalProject)
 # fetch and build libproc2
 ExternalProject_Add(
@@ -20,7 +26,7 @@ ExternalProject_Add(
     GIT_SHALLOW false # --depth 1
     SOURCE_DIR ${LIBPROC_SRC}
     BINARY_DIR ${LIBPROC_BIN} # build files
-    CONFIGURE_COMMAND ${LIBPROC_SRC}/autogen.sh && ${LIBPROC_SRC}/configure
+    CONFIGURE_COMMAND ${CONFIG_CMD}
     BUILD_COMMAND ${MAKE}
     INSTALL_COMMAND ""
     )
