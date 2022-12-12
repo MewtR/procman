@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/types.h> // for pid_t, see man pid_t
 #include <stdlib.h> // for strtoul, see man strtoul
+#include <string.h> // for strcmp
 
 #include "pids.h"
 
@@ -24,15 +25,17 @@ int main(int argc, char * argv[])
         i++;
     }
 
+    char * target_program = argv[1];
+
     char command_string[LEN];
     char command_result[LEN];
-    snprintf(command_string, LEN, "pidof %s", argv[1]);
+    snprintf(command_string, LEN, "pidof %s", target_program);
     FILE *command = popen(command_string, "r");  
     fgets(command_result, sizeof( command_result ), command);
     char * end = command_result+3; // only get the first pid (not a very good way to do it)
     pid_t pid = strtoul(command_result, &end, 10);
 
-    printf("Process id of %s is %i\n", argv[1], pid);
+    printf("Process id of %s is %i\n", target_program, pid);
 
     // libproc2 method
     struct pids_info *info = NULL;
@@ -53,8 +56,13 @@ int main(int argc, char * argv[])
         {
             printf("%s ", *cmdline);
         }
-
         printf("\n");
+
+        if (!strcmp(target_program, p_cmd))
+        {
+            printf("Pid of %s is %d\n", target_program, tid);
+            break;
+        }
     }
 }
 
