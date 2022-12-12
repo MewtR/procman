@@ -32,6 +32,29 @@ int main(int argc, char * argv[])
     char * end = command_result+3; // only get the first pid (not a very good way to do it)
     pid_t pid = strtoul(command_result, &end, 10);
 
-    printf("Process id of %s is %i", argv[1], pid);
+    printf("Process id of %s is %i\n", argv[1], pid);
+
+    // libproc2 method
+    struct pids_info *info = NULL;
+    enum pids_item items[] = { PIDS_ID_PID, PIDS_CMD, PIDS_CMDLINE_V };
+    enum rel_items { rel_pid, rel_cmd, rel_cmdline }; // rel_pid = 0, rel_cmd = 1, rel_cmdline = 2
+
+    struct pids_stack *stack;
+
+    procps_pids_new(&info, items, 3);
+    while ((stack = procps_pids_get(info, PIDS_FETCH_TASKS_ONLY)))
+    {
+        char * p_cmd = stack->head[rel_cmd].result.str;
+        char **p_cmdline = stack->head[rel_cmdline].result.strv;
+        int tid = stack->head[rel_pid].result.s_int;
+
+        printf("%d %s ", tid, p_cmd);
+        for ( char **cmdline = p_cmdline; *cmdline; cmdline++)
+        {
+            printf("%s ", *cmdline);
+        }
+
+        printf("\n");
+    }
 }
 
